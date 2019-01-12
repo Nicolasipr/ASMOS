@@ -2,6 +2,7 @@
 [bits 16]    ; Le dice a Assembler que trabaje en "Real mode" (16 bit mode)
 [org 0x7C00] ; localiza 0x7C00 en la memoria donde la BIOS lo cargará
 
+ 
 
 start:                  ; Etiqueta donde comienza el codigo
         xor ax,ax       ; pone el registro ax en 0
@@ -57,12 +58,18 @@ start:                  ; Etiqueta donde comienza el codigo
         start_os db 'Bienvenido a Nuesto S.O.!',0
         press_key db '>>> Presiona una Tecla para Continuar <<<', 0
 
+        login_label db '> Ingrese porfavor...(ESC para saltarse el inicio de sesion)', 0
+
         login_username db 'Usuario    : ',0
         login_password db 'Contrasena : ',0
 
         os_name db 'ASMOS',0
         os_info db 10, 'ASMOS 16-Bit, version = 1.0.0',13,0
 
+
+        help_text db '>Comandos: DIR, COPIAR, REN, DEL, CAT, SIZE, LIMPIAR, AYUDA, HORA, FECHA, VER, SALIR, JUGAR', 13, 10, 0
+        prompt db '>',0
+        
 
 
         
@@ -95,11 +102,30 @@ _print_string_white:
 
 .done_print:
 	ret
+        
+os_print_string:
+	pusha
 
- ;*****************************************
+	mov ah, 0Eh			; int 10h teletype function
+
+.repeat:
+	lodsb				; Get char from string
+	cmp al, 0
+	je .done			; If char is zero, end of string
+
+	int 10h				; Otherwise, print it
+	jmp .repeat			; And move on to next char
+
+.done:
+	popa
+	ret
+
+
+;*****************************************
         ; "Numeros magicos"
                 times (510 - ($ - $$)) db 0x00
                 dw 0xAA55
+
 
 
 ;***************************************************************************************
@@ -153,18 +179,42 @@ _Start:
 
 
         ; Limpiar pantalla 
+        ;/////////////////////////////////////////////////////////////
+	; load second sector into memory
+
+	mov ah, 0x03                    ; load third stage to memory
+	mov al, 1                       ; numbers of sectors to read into memory
+	mov dl, 0x80                    ; sector read from fixed/usb disk
+	mov ch, 0                       ; cylinder number
+	mov dh, 0                       ; head number
+	mov cl, 3                      ; sector number
+	mov bx, _OS_User_Login             ; load into es:bx segment :offset of buffer
+	int 0x13                        ; disk I/O interrupt
+
+	jmp _OS_User_Login                 ; jump to second stage
 
 
 
 
+
+_OS_User_Login:
+        mov al,2                    ; set font to normal mode
+	mov ah,0                    ; clear the screen
+	int 0x10                    ; call video interrupt
+
+	mov cx,0                    ; initialize counter(cx) to get input
+
+
+	
+        
         ;set cursor to specific position on screen
                 mov ah,0x02
                 mov bh,0x00
-                mov dh,0x02
+                mov dh,0x01
                 mov dl,0x00
                 int 0x10
 
-                mov si,login_username          ; point si to login_username
+                mov si,login_label          ; point si to login_username
                 call _print_string              ; display it on screen
 
                 ;****** read password
@@ -172,13 +222,14 @@ _Start:
                 ;set x y position to text
                 mov ah,0x02
                 mov bh,0x00
-                mov dh,0x03
+                mov dh,0x02
                 mov dl,0x00
                 int 0x10
 
 
-                mov si,login_password               ; point si to login_username
+                mov si,login_username               ; point si to login_username
                 call _print_string                   ; display it on screen
+                
 
 
 ; *****************************************
@@ -208,6 +259,22 @@ _getUsernameinput:
 
 .exitinput:
 	hlt
+
+
+
+
+	;****** read password
+
+	;set x y position to text
+	mov ah,0x02
+	mov bh,0x00
+	mov dh,0x03
+	mov dl,0x00
+	int 0x10
+
+
+	mov si,login_password               ; point si to login_username
+	call _print_string                   ; display it on screen
 ; *****************************************
 _getPasswordinput:
 
@@ -240,12 +307,12 @@ _skipLogin:
         ; *****************************************
         ; load third sector into memory
 
-	mov ah, 0x03                    ; load third stage to memory
+	mov ah, 0x04                    ; load 4 stage to memory
 	mov al, 1
 	mov dl, 0x80
 	mov ch, 0
 	mov dh, 0
-	mov cl, 3                       ; sector number 3
+	mov cl, 4                       ; sector number 3
 	mov bx, _Desktop_Enviroment
 	int 0x13
 
@@ -256,6 +323,60 @@ _skipLogin:
 _Desktop_Enviroment:
 
 
-	mov ax,0x13              ; clears the screen
+	mov al,2                    ; set font to normal mode
+	mov ah,0                    ; clear the screen
+	int 0x10                    ; call video interrupt
+
+	mov cx,0    
+
+        ;set x y position to text
+	mov ah,0x02
+	mov bh,0x00
+	mov dh,0x01
+	mov dl,0x00
 	int 0x10
 
+        mov si, help_text
+	call _print_string
+
+
+
+
+get_cmd:				    ; Main processing loop
+	mov di, input			; Clear input buffer each time
+	mov al, 0
+	mov cx, 256
+	rep stosb
+
+	mov di, command			; And single command buffer
+	mov cx, 32
+	rep stosb
+
+	mov si, prompt			; Main loop; prompt for input
+	call os_print_string
+
+        mov ax,0x00     ; Obtiene el input del teclado como getchar()
+        int 0x16  
+
+        call os_print_newline 
+
+	mov si, input			; If just enter pressed, prompt again
+	cmp byte [si], 0
+	je get_cmd
+
+        input			times 256 db 0
+	command			times 32 db 0
+        param_list		dw 0
+
+os_print_newline:
+	pusha
+
+	mov ah, 0Eh			; BIOS output char code
+
+	mov al, 13
+	int 10h
+	mov al, 10
+	int 10h
+
+	popa
+	ret
