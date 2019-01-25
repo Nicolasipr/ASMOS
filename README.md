@@ -1,7 +1,7 @@
 ASMOS
 =====
 
-*Assembly Operative System from scratch* 
+*Assembly Operating System from scratch* 
 
 
 *Concepts you may want to know beforehand: terminal, compiler, emulator, nasm, qemu*
@@ -22,7 +22,12 @@ ASMOS
 ## Getting Started
 ------------------
 
-This project was created with its sole purpose of studying assembly by NASM for a College project at Metropolitan University of Technology
+This project was created with its sole purpose of studying assembly by NASM for a College project at Metropolitan University of Technology, as a research about how Assembly NASM works on this subject 'Computer Organization'
+
+Our code is merely taken by two githubs repositories [MikeOS](https://github.com/mig-hub/mikeOS) and [cfenollosa/os-tutorial](https://github.com/cfenollosa/os-tutorial), modified them and had learn how they work, some minor changes applies had been done, and I'm not taking credits of any of this work, if you want to know more about this implementation and how its done, I suggest to go to [MikeOS Offical Site](http://mikeos.sourceforge.net/) as well as [NASM Oficcial documentation](https://nasm.us/doc/nasmdoci.html). 
+
+
+
 
 ### Prerequisites
 
@@ -57,6 +62,7 @@ qemu-system-x86_64 -M accel=kvm:tcg -soundhw ac97 -m 1024 -drive file="filename.
 
 ```
 
+Later on You can use our sh file to do some recursive compiling and add some disk images to better  handling this situation. 
 
 
 ## Strategy
