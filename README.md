@@ -13,7 +13,6 @@ ASMOS
     - [Prerequisites](#Prerequisites)
 - [How To Use it](#How-To-Use-it)
 - [Strategy](#strategy)
-
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
 - [License](#license)
@@ -22,9 +21,9 @@ ASMOS
 ## Getting Started
 ------------------
 
-This project was created with its sole purpose of studying assembly by NASM for a College project at Metropolitan University of Technology, as a research about how Assembly NASM works on this subject 'Computer Organization'
+This project was created with its sole purpose of studying assembly by NASM for a College project at Metropolitan University of Technology (Chile), as a research about how Assembly NASM works on this subject 'Computer Organization' with our professor help PhD. Michael Miranda, he helps us find resources, ideas and implementation about how things should work on ASM. 
 
-Our code is merely taken by two githubs repositories [MikeOS](https://github.com/mig-hub/mikeOS) and [cfenollosa/os-tutorial](https://github.com/cfenollosa/os-tutorial), modified them and had learn how they work, some minor changes applies had been done, and I'm not taking credits of any of this work, if you want to know more about this implementation and how its done, I suggest to go to [MikeOS Offical Site](http://mikeos.sourceforge.net/) as well as [NASM Oficcial documentation](https://nasm.us/doc/nasmdoci.html). 
+Our code is merely taken by two githubs repositories [MikeOS](https://github.com/mig-hub/mikeOS) and [cfenollosa/os-tutorial](https://github.com/cfenollosa/os-tutorial), modified them and had learn how they work, some minor changes applies had been done, and I'm not taking credits of any of this work, if you want to know more about this implementation and how its done, I suggest to go to [MikeOS Offical Site](http://mikeos.sourceforge.net/) as well as [NASM Oficcial documentation](https://nasm.us/doc/nasmdoci.html). Kudos to them.
 
 
 
@@ -34,8 +33,10 @@ Our code is merely taken by two githubs repositories [MikeOS](https://github.com
 This project works on [nasm](https://www.nasm.us/) and uses [qemu](https://www.qemu.org/) as a machine emulator so if you haven't already installed it, make sure to have it installed in order to compile our code.
 
 On a mac, [install Homebrew](http://brew.sh) and then `brew install qemu nasm`
+
 On Linux, install from you prefered package manager, such as `sudo apt-get install build-essential qemu nasm`
 
+On Windows, you have to install it with their guidelines, if not, change to Linux with a VM.
 
 ## How To Use this
 ------------------
@@ -62,7 +63,7 @@ qemu-system-x86_64 -M accel=kvm:tcg -soundhw ac97 -m 1024 -drive file="filename.
 
 ```
 
-Later on You can use our sh file to do some recursive compiling and add some disk images to better  handling this situation. 
+Later on You can use our sh file to do some recursive compiling and add some disk images to better handling this situation. 
 
 
 ## Strategy
